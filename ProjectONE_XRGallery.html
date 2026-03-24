@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f5f5">
+    <title>Project ONE</title>
+    <script>
+        (function () {
+            try {
+                var STORAGE_KEY = 'theme';
+                var saved = localStorage.getItem(STORAGE_KEY);
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var dark = saved === 'dark' || (saved !== 'light' && prefersDark);
+                document.documentElement.classList.toggle('dark', dark);
+                var m = document.querySelector('meta[name="theme-color"]');
+                if (m) m.setAttribute('content', dark ? '#000000' : '#f5f5f5');
+            } catch (e) {}
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; scroll-behavior: smooth; }
+
+        /* 螢幕：黑／灰底、淺字；黃色為強調色 */
+        html.dark {
+            color-scheme: dark;
+        }
+        html.dark body {
+            background-color:#1f1f1f;
+            color: #ffffff;
+        }
+        html.dark main {
+            background-color: #1e1e1f;
+            color: #d4d4d4;
+        }
+        html.dark main strong {
+            color: #fafafa;
+            font-weight: 700;
+        }
+        .dark .video-container {
+            background: #000000;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 0 0 1px rgba(64, 64, 64, 0.8);
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { 
+            border-bottom: 3px solid #eab308; 
+            color: #eab308; 
+            font-weight: bold;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .tab-content { display: block !important; }
+            #profiles-section { page-break-after: always; }
+            /* 蓋過 html.dark 的全域底色，確保 PDF 為淺色 */
+            html.dark body,
+            body { background: white !important; color: #1f2937 !important; }
+            html.dark main,
+            main { box-shadow: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background: white !important; color: #1f2937 !important; }
+            .project-card { break-inside: avoid; margin-bottom: 2rem; border: 2px solid #eee !important; }
+        }
+
+        .project-card:hover { transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25); }
+        .dark .project-card:hover { box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.12); }
+
+    </style>
+</head>
+<body class="bg-neutral-100 text-neutral-900">
+
+    <!-- 導航列 -->
+    <nav class="bg-black text-neutral-100 border-b border-neutral-800 p-4 sticky top-0 z-50 no-print">
+        <div class="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <h1 class="text-xl font-bold tracking-widest uppercase text-neutral-100">Project ONE : XR Gallery</h1>
+            <div class="flex flex-wrap items-center gap-3 md:gap-6 text-sm">
+                <button onclick="showTab('profile')" id="btn-profile" class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Profiles</button>
+                <button onclick="showTab('projects')" id="btn-projects" class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Portfolio</button>
+                <button type="button" id="theme-toggle" class="border border-neutral-600 px-3 py-1 rounded hover:border-yellow-500 hover:text-yellow-400 transition flex items-center gap-1.5" title="Toggle theme">
+                    <span class="dark:hidden">Dark</span>
+                    <span class="hidden dark:inline">Light</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto bg-white shadow-2xl min-h-screen dark:shadow-black/40">
+        
+        <!-- 個人標頭 (全頁通用) -->
+        <header class="p-8 md:p-12 border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/80">
+            <div class="flex flex-col md:flex-row justify-between items-start">
+                <div>
+                    <h2 class="text-4xl font-bold text-neutral-900 tracking-tight dark:text-neutral-50">馬一平 / MA YI-PING</h2>
+                    <p class="text-xl text-yellow-700 font-medium mt-2 dark:text-yellow-400">Unity XR 互動開發工程師 / Technical Artist</p>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-8 text-neutral-600 text-sm dark:text-neutral-400">
+                        <p>📍 新北市，台灣</p>
+                        <p>📧 twehh123@gmail.com</p>
+                        <p>🔗 <a href="#" class="underline hover:text-yellow-700 dark:hover:text-yellow-400">Portfolio site</a></p>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0 no-print">
+                    <span class="inline-block bg-yellow-100 text-yellow-900 px-4 py-1 rounded-full text-sm font-bold dark:bg-yellow-950/50 dark:text-yellow-300">5+ Years XR Experience</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 分頁內容 -->
+        <div class="p-8 md:p-12">
+            
+            <!-- 分頁 1: 履歷 + 簡介 -->
+            <section id="profile" class="tab-content active">
+                
+                <!-- 履歷部分 -->
+                <div id="profiles-section" class="mb-16">
+                    <h3 class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">Profiles</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="col-span-1 space-y-10">
+                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">Tech Stack</h4>
+                            <div>
+                                <p class="text-xs font-bold text-neutral-400 mb-2 dark:text-neutral-500">XR INTERACTION</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AR Foundation</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">VPS / Geospatial</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Cloud Anchor</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Image Track</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-neutral-400 mb-2 dark:text-neutral-500">3D & DESIGN</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Blender</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Maya</span>
+				                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">3ds Max</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Substance Painter</span>
+                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AI / PS / PR</span>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-900/70">
+                                <p class="text-xs font-bold text-neutral-500 mb-2 dark:text-neutral-400">SKILL RADAR</p>
+                                <canvas id="tech-radar-chart" aria-label="Tech stack radar chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-span-2 space-y-8">
+                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">Work Experience</h4>
+                            <div>
+                                <div class="flex justify-between font-bold text-neutral-900 dark:text-neutral-100">
+                                    <span>Evolution4 四點零有限公司</span>
+                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2021/05 - 2026/02</span>
+                                </div>
+                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">Unity 互動開發工程師 / 技術整合專案執行</p>
+                                <ul class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
+                                    <li>全流程獨立開發：主導 10 餘項 XR 專案（AR/VR/MR），具備從需求規劃、架構設計到部署上架的完整實戰經驗。</li>
+                                    <li>技術整合與優化：專精於跨平台互動邏輯編寫、多元互動感測整合，並針對行動端進行 3D 資產與渲染效能優化。</li>
+                                </ul>
+			                </div>
+			                <div>
+				                <div class="flex justify-between font-bold text-neutral-900 dark:text-neutral-100">
+                                    <span>輔仁大學 創意設計中心</span>
+                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2019/10 - 2019/12</span>
+                                </div>
+                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">軟體助理工程師</p>
+                                <ul class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
+                                    <li>體感互動開發：參與 Kinect 體感偵測與 Azure 臉部辨識之互動應用開發。</li>
+                                    <li>技術美術整合：負責 3D 美術資產優化與技術對接，確保視覺效果與程式邏輯精準整合。</li>
+                                </ul>
+                            </div>
+                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">About Me</h4>
+                            <ul class="text-sm text-neutral-600 list-disc mt-3 space-y-1 dark:text-neutral-400">
+                                <strong>一名擁有5 年資歷的Unity XR 互動開發工程師與技術美術 (TA)</strong>。
+                                <p>設計背景出身，擅長轉譯美術視覺與程式邏輯，致力於將模糊的專案需求轉化為穩定的數位互動系統。
+                                具備全流程開發經驗，從需求分析、架構規劃到效能優化皆能獨立勝任。</p>
+                                <p>學生時期曾獲全國技能競賽「3D 數位遊戲藝術」第二名，奠定了對高品質資產規格的堅持。</p>  
+                                <p>過去五年，主導多項AR/VR 模擬訓練與 WebGL 互動教具，磨練出解決硬體相容性與效能瓶頸的韌性。</p>  
+                                <br>我期待將這份跨領域整合能力投入專業團隊，以極低的溝通成本，創造具備實戰價值的 XR 體驗。</p>
+                            </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 分頁 2: 作品成果 -->
+            <section id="projects" class="tab-content">
+                <h3 class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">Portfolio</h3>
+                
+                <div class="grid grid-cols-1 gap-12">
+                    
+                    <!-- 模板 A: 影片嵌入型 (適用於有 YouTube 連結) -->
+                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white dark:border-neutral-700 dark:bg-neutral-900">
+                        <div class="p-6 md:p-8 flex flex-col lg:flex-row gap-8">
+                            <div class="lg:w-1/2">
+                                <h4 class="text-xl font-bold text-neutral-900 mb-2 dark:text-neutral-50">【特教農場】VR 模擬訓練系統</h4>
+                                <div class="flex flex-wrap gap-2 mb-4 text-[10px]">
+                                    <span class="bg-yellow-100 text-yellow-900 px-2 py-1 rounded dark:bg-yellow-950/60 dark:text-yellow-300">VR Simulation</span>
+                                    <span class="bg-yellow-100 text-yellow-900 px-2 py-1 rounded dark:bg-yellow-950/60 dark:text-yellow-300">Quest 2</span>
+                                    <span class="bg-neutral-100 text-neutral-800 px-2 py-1 rounded dark:bg-neutral-800 dark:text-neutral-200">NSC Project</span>
+                                </div>
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong>Scope:</strong> 將農業種植 SOP 轉化為沈浸式關卡，大幅降低實體訓練成本與風險。</p>
+                                    <p><strong>Responsibilities:</strong> 整合 Meta XR SDK 開發、特教適應性 UI 設計、GAS 雲端數據同步系統開發。</p>
+                                </div>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <div class="video-container">
+                                    <!-- 範例 YouTube 嵌入代碼，之後可更換 -->
+                                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模板 B: App 商店連結型 (適用於上架作品) -->
+                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white p-6 md:p-8 dark:border-neutral-700 dark:bg-neutral-900">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="w-full md:w-1/3">
+                                <div class="aspect-square bg-neutral-100 rounded-3xl flex items-center justify-center text-neutral-300 border border-neutral-200 shadow-inner dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">
+                                    <span class="text-4xl">APP ICON</span>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-2/3">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="text-xl font-bold text-neutral-900 dark:text-neutral-50">自閉症彩繪數位賦能 AR</h4>
+                                    <span class="text-xs text-neutral-400 dark:text-neutral-500">2025/03 ~</span>
+                                </div>
+                                <div class="mt-4 space-y-4">
+                                    <p class="text-sm text-neutral-600 dark:text-neutral-400">結合 AR Foundation 技術，將特殊兒陶偶彩繪課程數位化。主導模型拓樸優化與 PBR 貼圖製作，確保行動端順暢度。</p>
+                                    <div class="flex flex-wrap gap-4 mt-6">
+                                        <a href="#" class="bg-black text-white px-4 py-2 rounded-lg flex items-center hover:opacity-80 transition border border-neutral-700">
+                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 13c0 3.59-2.91 6.5-6.5 6.5S4.5 16.59 4.5 13 7.41 6.5 11 6.5s6.5 2.91 6.5 6.5z"/></svg>
+                                            App Store
+                                        </a>
+                                        <a href="#" class="bg-neutral-800 text-white px-4 py-2 rounded-lg flex items-center hover:opacity-80 transition border border-neutral-600">
+                                            Google Play
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模板 C: 圖文展示型 (適用於開發中或純圖片) -->
+                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white dark:border-neutral-700 dark:bg-neutral-900">
+                        <div class="p-6 md:p-8">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-6 border-b border-neutral-200 pb-4 italic dark:border-neutral-700 dark:text-neutral-50">【工業職訓】食農教育 VR 訓練</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Scene 1 ]</div>
+                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Scene 2 ]</div>
+                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Detail 3 ]</div>
+                            </div>
+                            <div class="bg-neutral-50 p-4 rounded-lg dark:bg-black/50 dark:ring-1 dark:ring-neutral-700">
+                                <h5 class="font-bold text-sm mb-2 text-yellow-800 dark:text-yellow-400">● Technical Solution</h5>
+                                <p class="text-sm text-neutral-600 leading-relaxed dark:text-neutral-400">設計遊戲化互動機制，將複雜的食農產業鏈轉化為直覺的操作體驗。透過 VR 將機台操作 SOP 具象化，降低實際操作之危險性。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="w-full bg-neutral-50 border-t border-neutral-200 text-neutral-400 text-xs no-print dark:border-neutral-800 dark:bg-black dark:text-neutral-500">
+        <div class="max-w-5xl mx-auto px-4 md:px-8 py-12 text-center">
+            <p>© 2026 Ma Yi-Ping. All Rights Reserved.</p>
+            <p>Unity XR Developer & Technical Artist</p>
+        </div>
+    </footer>
+
+    <button type="button" id="page-top-btn" class="no-print fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-black shadow-lg ring-1 ring-black/10 transition-opacity duration-300 ease-out hover:bg-yellow-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 dark:ring-white/10 dark:focus-visible:ring-offset-neutral-900 opacity-0 pointer-events-none" aria-label="Back to top" title="Page top">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = 'theme';
+
+            function getPreferredDark() {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            function applyTheme() {
+                var saved = localStorage.getItem(STORAGE_KEY);
+                var dark = saved === 'dark' || (saved !== 'light' && getPreferredDark());
+                document.documentElement.classList.toggle('dark', dark);
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', dark ? '#000000' : '#f5f5f5');
+            }
+
+            function toggleTheme() {
+                var isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem(STORAGE_KEY, isDark ? 'light' : 'dark');
+                applyTheme();
+            }
+
+            window.applyTheme = applyTheme;
+            window.toggleTheme = toggleTheme;
+
+            window.addEventListener('DOMContentLoaded', function () {
+                applyTheme();
+                var btn = document.getElementById('theme-toggle');
+                if (btn) btn.addEventListener('click', toggleTheme);
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+                    if (!localStorage.getItem(STORAGE_KEY)) applyTheme();
+                });
+            });
+
+            /* 列印 / 另存 PDF：暫時淺色，結束後還原使用者主題 */
+            window.addEventListener('beforeprint', function () {
+                document.documentElement.classList.remove('dark');
+            });
+            window.addEventListener('afterprint', function () {
+                applyTheme();
+            });
+        })();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var topBtn = document.getElementById('page-top-btn');
+            function syncPageTopBtn() {
+                if (!topBtn) return;
+                var show = window.scrollY > 16;
+                topBtn.classList.toggle('opacity-0', !show);
+                topBtn.classList.toggle('pointer-events-none', !show);
+                topBtn.classList.toggle('opacity-100', show);
+            }
+            if (topBtn) {
+                topBtn.addEventListener('click', function () {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                window.addEventListener('scroll', syncPageTopBtn, { passive: true });
+                syncPageTopBtn();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var radarCanvas = document.getElementById('tech-radar-chart');
+            if (!radarCanvas || typeof Chart === 'undefined') return;
+
+            if (radarCanvas.parentElement) {
+                // 取得父容器（黑框部分）
+                var container = radarCanvas.parentElement;
+                Object.assign(container.style, {
+                    maxHeight: '300px',  // 限制最大高度
+                    width: 'auto',      // 響應式
+                    margin: '3rem auto 2rem auto', 
+                    display: 'block'       // 確保容器以區塊元素形式存在
+                });
+
+                // 確保畫布本身不會超過父容器高度
+                Object.assign(radarCanvas.style, {
+                    maxHeight: '100%',
+                    maxWidth: '100%',
+                    width: 'auto',         // 寬度根據高度自動縮放
+                    height: 'auto',
+                    margin: '0rem auto 0rem auto'
+                });
+            }
+
+            // --- 2. 顏色抓取函式 (對應您的變數設定) ---
+            function getChartColors() {
+                const isDark = document.documentElement.classList.contains('dark');
+                return {
+                    label: isDark ? '#d4d4d4' : '#4F4F4F',
+                    grid: isDark ? 'rgba(212,212,212,0.18)' : 'rgba(64,64,64,0.2)',
+                    angle: isDark ? 'rgba(212,212,212,0.2)' : 'rgba(64,64,64,0.3)',
+                    pointBorder: isDark ? '#111111' : '#ffffff'
+                };
+            }
+
+            let colors = getChartColors();
+
+            // --- 3. 初始化圖表 ---
+            var techChart = new Chart(radarCanvas, {
+                type: 'radar',
+                data: {
+                    labels: ['Spatial Computing', 'XR Interaction', 'C# Systems', '3D Asset Pipeline', 'Technical Art', 'Visual & UI'],
+                    datasets: [{
+                        label: 'Skill Level',
+                        data: [5, 5, 4, 4, 3, 3],
+                        fill: true,
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        borderColor: '#eab308',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#eab308',
+                        pointBorderColor: colors.pointBorder,
+                        pointBorderWidth: 1.5,
+                        pointHoverBackgroundColor: '#facc15',
+                        pointHoverBorderColor: colors.pointBorder
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 5,
+                            ticks: { stepSize: 1, display: false },
+                            angleLines: { color: colors.angle },
+                            grid: { color: colors.grid },
+                            pointLabels: {
+                                color: colors.label,
+                                font: { size: 10, weight: '600' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.label + ': ' + ctx.raw
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- 4. 監聽模式切換 (解決手動切換不更新的問題) ---
+            const observer = new MutationObserver(() => {
+                const newColors = getChartColors();
+                
+                // 更新圖表屬性
+                techChart.options.scales.r.angleLines.color = newColors.angle;
+                techChart.options.scales.r.grid.color = newColors.grid;
+                techChart.options.scales.r.pointLabels.color = newColors.label;
+                techChart.data.datasets[0].pointBorderColor = newColors.pointBorder;
+                techChart.data.datasets[0].pointHoverBorderColor = newColors.pointBorder;
+                techChart.update('none'); // 即時重繪不閃爍
+            });
+
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        });
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>

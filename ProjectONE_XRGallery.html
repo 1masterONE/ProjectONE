@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f5f5f5">
     <title>Project ONE</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         (function () {
             try {
@@ -15,7 +17,7 @@
                 document.documentElement.classList.toggle('dark', dark);
                 var m = document.querySelector('meta[name="theme-color"]');
                 if (m) m.setAttribute('content', dark ? '#000000' : '#f5f5f5');
-            } catch (e) {}
+            } catch (e) { }
         })();
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,70 +27,178 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            scroll-behavior: smooth;
+        }
 
         /* 螢幕：黑／灰底、淺字；黃色為強調色 */
         html.dark {
             color-scheme: dark;
         }
+
         html.dark body {
-            background-color:#1f1f1f;
+            background-color: #1f1f1f;
             color: #ffffff;
         }
+
         html.dark main {
             background-color: #1e1e1f;
             color: #d4d4d4;
         }
+
         html.dark main strong {
             color: #fafafa;
             font-weight: 700;
         }
+
         .dark .video-container {
             background: #000000;
             border-radius: 0.5rem;
             box-shadow: inset 0 0 0 1px rgba(64, 64, 64, 0.8);
         }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .tab-btn.active { 
-            border-bottom: 3px solid #eab308; 
-            color: #eab308; 
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid #eab308;
+            color: #eab308;
             font-weight: bold;
         }
 
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
+            /* 16:9 */
             height: 0;
             overflow: hidden;
         }
+
         .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
+            border-bottom: 0;
             width: 100%;
             height: 100%;
             border-radius: 0.5rem;
         }
 
-        @media print {
-            .no-print { display: none !important; }
-            .tab-content { display: block !important; }
-            #profiles-section { page-break-after: always; }
-            /* 蓋過 html.dark 的全域底色，確保 PDF 為淺色 */
-            html.dark body,
-            body { background: white !important; color: #1f2937 !important; }
-            html.dark main,
-            main { box-shadow: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background: white !important; color: #1f2937 !important; }
-            .project-card { break-inside: avoid; margin-bottom: 2rem; border: 2px solid #eee !important; }
+        /* 1. 基礎卡片樣式 */
+        .project-card {
+            /* 結構與形狀 */
+            border-radius: 1rem;
+            /* 對應 rounded-2xl */
+            overflow: hidden;
+            /* 對應 overflow-hidden */
+            background-color: #ffffff;
+            /* 對應 bg-white */
+            border: 1px solid #d4d4d4;
+            /* 對應 border border-neutral-300 */
+
+            /* 間距與佈局 */
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            /* 對應 p-6 (24px) */
+
+            /* 動畫效果 */
+            transition: all 0.3s ease;
         }
 
-        .project-card:hover { transition: all 0.3s ease; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25); }
-        .dark .project-card:hover { box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.12); }
+        /* 響應式：電腦版加大內距 */
+        @media (min-width: 768px) {
+            .project-card {
+                padding: 2rem;
+                /* 對應 md:p-8 (32px) */
+            }
+        }
 
+        /* 2. 懸停效果 */
+        .project-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* 3. 深色模式樣式 (假設你的 HTML 標籤有 class="dark") */
+        .dark .project-card {
+            background-color: #171717;
+            /* 對應 dark:bg-neutral-900 */
+            border-color: #404040;
+            /* 對應 dark:border-neutral-700 */
+        }
+
+        /* 深色模式下的懸停發光 */
+        .dark .project-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.12);
+        }
+
+        /* 4. 列印樣式 (PDF/列印專用) */
+        @media print {
+            .project-card {
+                break-inside: avoid;
+                border: 2px solid #eee !important;
+                background: white !important;
+                box-shadow: none !important;
+                transform: none !important;
+            }
+        }
+
+        /* 標籤基礎樣式 (通用) */
+        .tag-tech,
+        .tag-platform {
+            padding: 0.25rem 0.5rem;
+            /* 對應 px-2 py-1 */
+            border-radius: 0.25rem;
+            /* 對應 rounded */
+            font-size: 10px;
+            /* 你原本設定的 text-[10px] */
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* 1. 技術標籤：亮黃色 (強調用) */
+        .tag-tech {
+            background-color: #fde047;
+            /* bg-yellow-300 */
+            color: #171717;
+            /* text-neutral-900 */
+        }
+
+        /* 2. 平台標籤：淺灰色 (輔助用) */
+        .tag-platform {
+            background-color: #d4d4d4;
+            /* bg-neutral-300 */
+            color: #262626;
+            /* text-neutral-800 */
+        }
+
+        /* --- 深色模式支援 --- */
+        .dark .tag-tech {
+            background-color: rgba(66, 32, 6, 0.6);
+            /* dark:bg-yellow-950/60 */
+            color: #fde047;
+            /* dark:text-yellow-300 */
+            border: 1px solid rgba(253, 224, 71, 0.2);
+        }
+
+        .dark .tag-platform {
+            background-color: #262626;
+            /* dark:bg-neutral-800 */
+            color: #e5e5e5;
+            /* dark:text-neutral-200 */
+        }
     </style>
 </head>
+
 <body class="bg-neutral-100 text-neutral-900">
 
     <!-- 導航列 -->
@@ -96,9 +206,13 @@
         <div class="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-3">
             <h1 class="text-xl font-bold tracking-widest uppercase text-neutral-100">Project ONE : XR Gallery</h1>
             <div class="flex flex-wrap items-center gap-3 md:gap-6 text-sm">
-                <button onclick="showTab('profile')" id="btn-profile" class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Profiles</button>
-                <button onclick="showTab('projects')" id="btn-projects" class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Portfolio</button>
-                <button type="button" id="theme-toggle" class="border border-neutral-600 px-3 py-1 rounded hover:border-yellow-500 hover:text-yellow-400 transition flex items-center gap-1.5" title="Toggle theme">
+                <button onclick="showTab('profile')" id="btn-profile"
+                    class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Profiles</button>
+                <button onclick="showTab('projects')" id="btn-projects"
+                    class="tab-btn px-2 py-1 transition text-neutral-400 hover:text-white">Portfolio</button>
+                <button type="button" id="theme-toggle"
+                    class="border border-neutral-600 px-3 py-1 rounded hover:border-yellow-500 hover:text-yellow-400 transition flex items-center gap-1.5"
+                    title="Toggle theme">
                     <span class="dark:hidden">Dark</span>
                     <span class="hidden dark:inline">Light</span>
                 </button>
@@ -107,170 +221,490 @@
     </nav>
 
     <main class="max-w-5xl mx-auto bg-white shadow-2xl min-h-screen dark:shadow-black/40">
-        
+
         <!-- 個人標頭 (全頁通用) -->
-        <header class="p-8 md:p-12 border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/80">
+        <header
+            class="p-8 md:p-12 border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/80">
             <div class="flex flex-col md:flex-row justify-between items-start">
                 <div>
-                    <h2 class="text-4xl font-bold text-neutral-900 tracking-tight dark:text-neutral-50">馬一平 / MA YI-PING</h2>
-                    <p class="text-xl text-yellow-700 font-medium mt-2 dark:text-yellow-400">Unity XR 互動開發工程師 / Technical Artist</p>
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-8 text-neutral-600 text-sm dark:text-neutral-400">
-                        <p>📍 新北市，台灣</p>
+                    <h2 class="text-4xl font-bold text-neutral-900 tracking-tight dark:text-neutral-50">馬一平 / MA YI-PING
+                    </h2>
+                    <p class="text-xl text-yellow-700 font-medium mt-2 dark:text-yellow-400">Unity XR 互動開發工程師 /
+                        Technical Artist</p>
+                    <div
+                        class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-8 text-neutral-600 text-sm dark:text-neutral-400">
+                        <p>📍 New Taipei City, Taiwan</p>
                         <p>📧 twehh123@gmail.com</p>
-                        <p>🔗 <a href="#" class="underline hover:text-yellow-700 dark:hover:text-yellow-400">Portfolio site</a></p>
                     </div>
                 </div>
                 <div class="mt-6 md:mt-0 no-print">
-                    <span class="inline-block bg-yellow-100 text-yellow-900 px-4 py-1 rounded-full text-sm font-bold dark:bg-yellow-950/50 dark:text-yellow-300">5+ Years XR Experience</span>
+                    <span
+                        class="inline-block bg-yellow-300 text-neutral-900 px-4 py-1 rounded-full text-sm font-bold dark:bg-yellow-950/50 dark:text-yellow-300">5+
+                        Years XR Experience</span>
                 </div>
             </div>
         </header>
 
         <!-- 分頁內容 -->
         <div class="p-8 md:p-12">
-            
+
             <!-- 分頁 1: 履歷 + 簡介 -->
             <section id="profile" class="tab-content active">
-                
+
                 <!-- 履歷部分 -->
                 <div id="profiles-section" class="mb-16">
-                    <h3 class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">Profiles</h3>
+                    <h3
+                        class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">
+                        Profiles</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="col-span-1 space-y-10">
-                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">Tech Stack</h4>
+                            <h4
+                                class="font-bold text-neutral-900 border-b border-neutral-300 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">
+                                Tech Stack</h4>
                             <div>
-                                <p class="text-xs font-bold text-neutral-400 mb-2 dark:text-neutral-500">XR INTERACTION</p>
+                                <p class="text-xs font-bold text-neutral-400 mb-2 dark:text-neutral-500">XR INTERACTION
+                                </p>
                                 <div class="flex flex-wrap gap-1">
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AR Foundation</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">VPS / Geospatial</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Cloud Anchor</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Image Track</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AR Foundation</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">VPS / Geospatial</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Cloud Anchor</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Image Track</span>
                                 </div>
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-neutral-400 mb-2 dark:text-neutral-500">3D & DESIGN</p>
                                 <div class="flex flex-wrap gap-1">
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Blender</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Maya</span>
-				                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">3ds Max</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Substance Painter</span>
-                                    <span class="bg-neutral-100 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AI / PS / PR</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Blender</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Maya</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">3ds Max</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">Substance Painter</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">CSP</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">AI</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">PS</span>
+                                    <span class="bg-neutral-300 px-2 py-1 rounded text-[10px] dark:bg-neutral-800 dark:text-neutral-200">PR</span>
                                 </div>
                             </div>
-                            <div class="rounded-xl border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-900/70">
+                            <div
+                                class="rounded-xl border border-neutral-300 bg-neutral-50 p-3 dark:border-neutral-700 dark:bg-neutral-900/70">
                                 <p class="text-xs font-bold text-neutral-500 mb-2 dark:text-neutral-400">SKILL RADAR</p>
                                 <canvas id="tech-radar-chart" aria-label="Tech stack radar chart"></canvas>
                             </div>
                         </div>
                         <div class="col-span-2 space-y-8">
-                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">Work Experience</h4>
+                            <h4
+                                class="font-bold text-neutral-900 border-b border-neutral-300 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">
+                                Work Experience</h4>
                             <div>
                                 <div class="flex justify-between font-bold text-neutral-900 dark:text-neutral-100">
                                     <span>Evolution4 四點零有限公司</span>
-                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2021/05 - 2026/02</span>
+                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2021/05 -
+                                        2026/02</span>
                                 </div>
-                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">Unity 互動開發工程師 / 技術整合專案執行</p>
-                                <ul class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
+                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">Unity
+                                    互動開發工程師 / 技術整合專案執行</p>
+                                <ul
+                                    class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
                                     <li>全流程獨立開發：主導 10 餘項 XR 專案（AR/VR/MR），具備從需求規劃、架構設計到部署上架的完整實戰經驗。</li>
                                     <li>技術整合與優化：專精於跨平台互動邏輯編寫、多元互動感測整合，並針對行動端進行 3D 資產與渲染效能優化。</li>
                                 </ul>
-			                </div>
-			                <div>
-				                <div class="flex justify-between font-bold text-neutral-900 dark:text-neutral-100">
+                            </div>
+                            <div>
+                                <div class="flex justify-between font-bold text-neutral-900 dark:text-neutral-100">
                                     <span>輔仁大學 創意設計中心</span>
-                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2019/10 - 2019/12</span>
+                                    <span class="text-neutral-400 text-xs dark:text-neutral-500">2019/10 -
+                                        2019/12</span>
                                 </div>
-                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">軟體助理工程師</p>
-                                <ul class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
+                                <p class="text-yellow-700 text-sm mt-1 italic font-medium dark:text-yellow-400">軟體助理工程師
+                                </p>
+                                <ul
+                                    class="text-sm text-neutral-600 list-disc pl-5 mt-3 space-y-1 dark:text-neutral-400">
                                     <li>體感互動開發：參與 Kinect 體感偵測與 Azure 臉部辨識之互動應用開發。</li>
                                     <li>技術美術整合：負責 3D 美術資產優化與技術對接，確保視覺效果與程式邏輯精準整合。</li>
                                 </ul>
                             </div>
-                            <h4 class="font-bold text-neutral-900 border-b border-neutral-200 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">About Me</h4>
+                            <h4
+                                class="font-bold text-neutral-900 border-b border-neutral-300 pb-2 uppercase text-xs tracking-widest dark:border-neutral-700 dark:text-neutral-50">
+                                About Me</h4>
                             <ul class="text-sm text-neutral-600 list-disc mt-3 space-y-1 dark:text-neutral-400">
-                                <strong>一名擁有5 年資歷的Unity XR 互動開發工程師與技術美術 (TA)</strong>。
+                                <strong>一名擁有5 年資歷的Unity XR 互動開發工程師與技術美術 (TA)</strong>
                                 <p>設計背景出身，擅長轉譯美術視覺與程式邏輯，致力於將模糊的專案需求轉化為穩定的數位互動系統。
-                                具備全流程開發經驗，從需求分析、架構規劃到效能優化皆能獨立勝任。</p>
-                                <p>學生時期曾獲全國技能競賽「3D 數位遊戲藝術」第二名，奠定了對高品質資產規格的堅持。</p>  
-                                <p>過去五年，主導多項AR/VR 模擬訓練與 WebGL 互動教具，磨練出解決硬體相容性與效能瓶頸的韌性。</p>  
-                                <br>我期待將這份跨領域整合能力投入專業團隊，以極低的溝通成本，創造具備實戰價值的 XR 體驗。</p>
+                                    具備全流程開發經驗，從需求分析、架構規劃到效能優化皆能獨立勝任。</p>
+                                <br>學生時期曾獲全國技能競賽「3D 數位遊戲藝術」第二名，奠定了對高品質資產規格的堅持。</p>
+                                <br>過去五年，主導多項跨裝置與跨平台的互動系統開發，磨練出解決硬體相容性與效能瓶頸的技術韌性。
+                                    期待能將這套成熟的技術框架投入更多元的專案，為數位互動領域帶來更多突破性的可能。</p>
                             </ul>
+                        </div>
                     </div>
-                </div>
             </section>
 
             <!-- 分頁 2: 作品成果 -->
             <section id="projects" class="tab-content">
-                <h3 class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">Portfolio</h3>
-                
+                <h3
+                    class="text-2xl font-bold border-l-4 border-yellow-500 pl-3 mb-8 dark:border-yellow-500 dark:text-neutral-50">
+                    Portfolio</h3>
                 <div class="grid grid-cols-1 gap-12">
-                    
-                    <!-- 模板 A: 影片嵌入型 (適用於有 YouTube 連結) -->
-                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white dark:border-neutral-700 dark:bg-neutral-900">
-                        <div class="p-6 md:p-8 flex flex-col lg:flex-row gap-8">
-                            <div class="lg:w-1/2">
-                                <h4 class="text-xl font-bold text-neutral-900 mb-2 dark:text-neutral-50">【特教農場】VR 模擬訓練系統</h4>
-                                <div class="flex flex-wrap gap-2 mb-4 text-[10px]">
-                                    <span class="bg-yellow-100 text-yellow-900 px-2 py-1 rounded dark:bg-yellow-950/60 dark:text-yellow-300">VR Simulation</span>
-                                    <span class="bg-yellow-100 text-yellow-900 px-2 py-1 rounded dark:bg-yellow-950/60 dark:text-yellow-300">Quest 2</span>
-                                    <span class="bg-neutral-100 text-neutral-800 px-2 py-1 rounded dark:bg-neutral-800 dark:text-neutral-200">NSC Project</span>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【教育輔助】自閉症彩繪工藝數位賦能 AR</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Plane Tracking</span>
+                                <span class="tag-tech">Dynamic Texture Painting</span>
+                                <span class="tag-tech">Low-poly Retopology</span>
+                                <span class="tag-tech">Cloud Storage</span>
+                                <span class="tag-platform">iOS</span>
+                                <span class="tag-platform">Android</span>
+                                <span class="tag-platform">Meta Quest</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/eHkdMi1Go_I" frameborder="0"
+                                        allowfullscreen></iframe>
                                 </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
                                 <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
-                                    <p><strong>Scope:</strong> 將農業種植 SOP 轉化為沈浸式關卡，大幅降低實體訓練成本與風險。</p>
-                                    <p><strong>Responsibilities:</strong> 整合 Meta XR SDK 開發、特教適應性 UI 設計、GAS 雲端數據同步系統開發。</p>
+                                    <p><strong class="block mb-[4px]">資產管線優化</strong> 主導從 CAD 原始檔至 3D
+                                        行動端模型的重新拓樸（Retopology）流程，在維持精度的前提下極大化渲染效能。</p>
+                                    <p><strong class="block mb-[4px]">系統整合與優化</strong> 整合即時繪圖功能至 AR
+                                        環境，並針對特殊教育需求設計低刺激性、高直覺度的 UI/UX 互動邏輯。</p>
+                                    <p><strong class="block mb-[4px]">數據追蹤系統</strong> 透過 Google Apps Script (GAS)
+                                        實作操作日誌同步功能，將使用者行為轉化為可分析的教學數據。</p>
+                                    <p class="text-xs italic opacity-80">導入「114 USR 大學社會責任計畫」，作為特教科技輔助教材。</p>
                                 </div>
                             </div>
-                            <div class="lg:w-1/2">
-                                <div class="video-container">
-                                    <!-- 範例 YouTube 嵌入代碼，之後可更換 -->
-                                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <div class="flex flex-row justify-end gap-3 mt-8 w-full">
+                            <a href="https://apps.apple.com/tw/app/龍華科技大學-自閉症彩繪工藝數位賦能ar/id6747648704" target="_blank"
+                                class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\download-on-the-app-store-en-us_black.svg" alt="App Store"
+                                    class="h-10 w-auto">
+                            </a>
+                            <a href="https://play.google.com/store/apps/details?id=com.EVO4.AutismPaintingCraftEmpowerment&pcampaignid=web_share"
+                                target="_blank" class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\GetItOnGooglePlay_Badge_Web_color_English.png"
+                                    alt="Google Play" class="h-10 w-auto">
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【VR 職訓】垂直農場 VR 模擬訓練</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Meta XR SDK</span>
+                                <span class="tag-tech">Cloud Storage</span>
+                                <span class="tag-platform">Meta Quest</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/XrMtnhEn-VI" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">標準化訓練模擬</strong> 將農業種植 SOP 轉化為沈浸式 VR
+                                        關卡，大幅降低實體訓練成本。</p>
+                                    <p><strong class="block mb-[4px]">自動化數據分析</strong> 實作雲端日誌同步機制
+                                        ，將特教生操作行為數據化。</p>
+                                    <p class="text-xs italic opacity-80">國科會 111 鼓勵技專校院從事實務型研究專案計畫
+                                        -「特教生虛擬實境之科技農場適應性實務研究計畫」</p>
+                                    <p class="text-xs italic opacity-80">提供零風險、低成本的職前訓練環境，有效提升特殊教育學生之職前訓練適應力。</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 模板 B: App 商店連結型 (適用於上架作品) -->
-                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white p-6 md:p-8 dark:border-neutral-700 dark:bg-neutral-900">
-                        <div class="flex flex-col md:flex-row gap-8 items-center">
-                            <div class="w-full md:w-1/3">
-                                <div class="aspect-square bg-neutral-100 rounded-3xl flex items-center justify-center text-neutral-300 border border-neutral-200 shadow-inner dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">
-                                    <span class="text-4xl">APP ICON</span>
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【VR 職訓】食農教育 VR 模擬訓練</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Meta XR SDK</span>
+                                <span class="tag-tech">Cloud Storage</span>
+                                <span class="tag-platform">Meta Quest</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/aFUWWZgt45c" frameborder="0"
+                                        allowfullscreen></iframe>
                                 </div>
                             </div>
-                            <div class="w-full md:w-2/3">
-                                <div class="flex justify-between items-start">
-                                    <h4 class="text-xl font-bold text-neutral-900 dark:text-neutral-50">自閉症彩繪數位賦能 AR</h4>
-                                    <span class="text-xs text-neutral-400 dark:text-neutral-500">2025/03 ~</span>
-                                </div>
-                                <div class="mt-4 space-y-4">
-                                    <p class="text-sm text-neutral-600 dark:text-neutral-400">結合 AR Foundation 技術，將特殊兒陶偶彩繪課程數位化。主導模型拓樸優化與 PBR 貼圖製作，確保行動端順暢度。</p>
-                                    <div class="flex flex-wrap gap-4 mt-6">
-                                        <a href="#" class="bg-black text-white px-4 py-2 rounded-lg flex items-center hover:opacity-80 transition border border-neutral-700">
-                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M17.5 13c0 3.59-2.91 6.5-6.5 6.5S4.5 16.59 4.5 13 7.41 6.5 11 6.5s6.5 2.91 6.5 6.5z"/></svg>
-                                            App Store
-                                        </a>
-                                        <a href="#" class="bg-neutral-800 text-white px-4 py-2 rounded-lg flex items-center hover:opacity-80 transition border border-neutral-600">
-                                            Google Play
-                                        </a>
-                                    </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">知識具象化開發</strong> 設計遊戲化互動機制，將食農產業鏈流程轉化為直觀的操作體驗。</p>
+                                    <p><strong class="block mb-[4px]">自動化數據分析</strong> 實作雲端日誌同步機制
+                                        ，將特教生操作行為數據化。</p>
+                                    <p class="text-xs italic opacity-80">教育部 112-113 USR大學社會責任實踐計畫 -
+                                        「自閉症特教生適應性科技與食農教育-龍潭肯納社福莊園」</p>
+                                    <p class="text-xs italic opacity-80">透過數據分析成功找出學生易出錯之作業環節，提供特教生與一般學子具備回饋感的實作訓練。</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 模板 C: 圖文展示型 (適用於開發中或純圖片) -->
-                    <div class="project-card border border-neutral-300 rounded-2xl overflow-hidden bg-white dark:border-neutral-700 dark:bg-neutral-900">
-                        <div class="p-6 md:p-8">
-                            <h4 class="text-xl font-bold text-neutral-900 mb-6 border-b border-neutral-200 pb-4 italic dark:border-neutral-700 dark:text-neutral-50">【工業職訓】食農教育 VR 訓練</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Scene 1 ]</div>
-                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Scene 2 ]</div>
-                                <div class="aspect-video bg-neutral-100 rounded border border-neutral-200 flex items-center justify-center text-neutral-400 text-xs italic dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-500">[ Detail 3 ]</div>
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【AR 導覽】醫指通 AR 室內定位導引</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Cloud Anchor</span>
+                                <span class="tag-tech">NavMesh</span>
+                                <span class="tag-platform">iOS</span>
+                                <span class="tag-platform">Android</span>
                             </div>
-                            <div class="bg-neutral-50 p-4 rounded-lg dark:bg-black/50 dark:ring-1 dark:ring-neutral-700">
-                                <h5 class="font-bold text-sm mb-2 text-yellow-800 dark:text-yellow-400">● Technical Solution</h5>
-                                <p class="text-sm text-neutral-600 leading-relaxed dark:text-neutral-400">設計遊戲化互動機制，將複雜的食農產業鏈轉化為直覺的操作體驗。透過 VR 將機台操作 SOP 具象化，降低實際操作之危險性。</p>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/IP90OHVMWHs" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
                             </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">精準導覽機制</strong> 針對醫院複雜室內環境設計定位方案，克服 GPS
+                                        訊號限制，透過空間特徵識別實現路徑指引。</p>
+                                    <p><strong class="block mb-[4px]">沈浸式導引設計</strong> 設計直觀的 AR
+                                        虛實融合路徑指引，協助訪客快速了解中心各項醫療科技展示區域。</p>
+                                    <p class="text-xs italic opacity-80">成功於智慧醫療推動中心完成實地壓力測試。</p>
+                                    <p class="text-xs italic opacity-80">驗證免標記 (Markerless) 導航技術之落地可行性。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【AR 導覽】致理科大 AR 校園定位導引</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Cloud Anchor</span>
+                                <span class="tag-tech">NavMesh</span>
+                                <span class="tag-platform">iOS</span>
+                                <span class="tag-platform">Android</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/vbs4PoDwYos" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">無插件定位方案</strong> 不依賴外部收費插件，純透過 AR Foundation
+                                        視覺特徵辨識實作校園場域定位與路徑指引。</p>
+                                    <p><strong class="block mb-[4px]">智慧校園導覽</strong> 將校園建築資訊與實景結合，實作虛實融合的數位孿生導覽系統。</p>
+                                    <p class="text-xs italic opacity-80">完成全校區實地測試與路線布建，作為校園智慧化轉型指標應用。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【教育輔助】低視能 VR 模擬應用</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech"> Post-Processing</span>
+                                <span class="tag-tech"> Spatial Anchors</span>
+                                <span class="tag-platform">Meta Quest</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/giUP5txF_BA" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">視覺病理模擬</strong>
+                                        結合動態濾鏡貼圖與後處理（Post-Processing）疊加效果，擬真還原白內障、青光眼等複合病變之視覺限制。</p>
+                                    <p><strong class="block mb-[4px]">空間同步技術</strong> 運用 Spatial Anchors 實作虛擬空間與現實教室的
+                                        1:1 精確對位，確保訓練安全性。</p>
+                                    <p class="text-xs italic opacity-80">導入長照人才培育計畫，供照護專業學生進行感官障礙的沉浸式共情體驗。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【混合實境實驗】MR 互動效果展示</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech"> Passthrough</span>
+                                <span class="tag-tech"> Spatial Anchors</span>
+                                <span class="tag-tech"> Hand Tracking</span>
+                                <span class="tag-platform">Meta Quest</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/39JJYKDny88" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">整合 Meta Quest 透視技術與空間錨點，探索混合實境環境下的交互範式。</p>
+                                    <p class="text-xs italic opacity-80">建立內部 XR 技術儲備庫，縮短後續專案研發週期。</p>
+                                    <p class="text-xs italic opacity-80">作為技術展示原型，協助業務端進行提案。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【教育輔助】胚胎醫學教具</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Plane Tracking</span>
+                                <span class="tag-tech">BlendShapes Animation</span>
+                                <span class="tag-tech">Cloud Storage</span>
+                                <span class="tag-platform">iOS</span>
+                                <span class="tag-platform">Android</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/ey-s-mh9y30" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">醫學視覺轉譯</strong> 協同醫學系將 2D 平面解剖圖轉化為精準 3D 模型，利用
+                                        BlendShapes 模擬胚胎發育的連續動態。</p>
+                                    <p><strong class="block mb-[4px]">情境學習引導</strong> 透過 AR 技術解決傳統醫學教學空間感不足的痛點，支援多維度觀測。
+                                    </p>
+                                    <p><strong class="block mb-[4px]">數據追蹤系統</strong> 透過 Google Apps Script (GAS)
+                                        實作操作日誌同步功能，將使用者行為轉化為可分析的教學數據。</p>
+                                    <p class="text-xs italic opacity-80">應用於輔大醫學系專業課程，顯著提升學生對胚胎發育過程的空間理解力。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row justify-end gap-3 mt-8 w-full">
+                            <a href="https://evo4.com.tw/WebGL/TheBodyCavities_WebGL/index.html" target="_blank"
+                                class="bg-black border border-neutral-300 px-8 py-1 rounded text-sm font-medium text-neutral-100 hover:scale-105 transition-transform flex items-center gap-1.5">
+                                WebGL
+                            </a>
+                            <a href="https://apps.apple.com/tw/app/ar-body-cavities/id1602466638" target="_blank"
+                                class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\download-on-the-app-store-en-us_black.svg" alt="App Store"
+                                    class="h-10 w-auto">
+                            </a>
+                            <a href="https://play.google.com/store/apps/details?id=com.EVO4.ARBodyCavities&pcampaignid=web_share"
+                                target="_blank" class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\GetItOnGooglePlay_Badge_Web_color_English.png"
+                                    alt="Google Play" class="h-10 w-auto">
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="mb-3">
+                            <h4 class="text-xl font-bold text-neutral-900 mb-4 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                                【教育輔助】HumanSectionalAnatomy</h4>
+                            <div class="flex flex-wrap gap-2 mb-6 text-[10px]">
+                                <span class="tag-tech">Programmatic Generation</span>
+                                <span class="tag-tech">Large-scale Data Management</span>
+                                <span class="tag-tech">Cloud Storage</span>
+                                <span class="tag-platform">iOS</span>
+                                <span class="tag-platform">Android</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col lg:flex-row gap-8 items-start">
+                            <div class="w-full lg:w-3/5">
+                                <div class="video-container shadow-lg rounded-xl overflow-hidden">
+                                    <iframe src="https://www.youtube.com/embed/ey-s-mh9y30" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-2/5 flex flex-col justify-between self-stretch">
+                                <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+                                    <p><strong class="block mb-[4px]">自動化建模管線</strong> 開發自動化工具將上百張解剖切片影像轉換為具備厚度的 3D
+                                        模型，大幅節省人工建模成本。</p>
+                                    <p><strong class="block mb-[4px]">大規模數據管理</strong>
+                                        建立高效的數據管理機制，流暢處理與讀取上百片高解析度切片資料，確保系統運行效能與解剖細節精確度。</p>
+                                    <p><strong class="block mb-[4px]">數據追蹤系統</strong> 透過 Google Apps Script (GAS)
+                                        實作操作日誌同步功能，將使用者行為轉化為可分析的教學數據。</p>
+                                    <p class="text-xs italic opacity-80">作為醫學院解剖學專業輔助教具，有效優化學生對複雜人體結構之學習效率。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row justify-end gap-3 mt-8 w-full">
+                            <a href="https://apps.apple.com/tw/app/human-sectional-anatomy/id6756410828" target="_blank"
+                                class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\download-on-the-app-store-en-us_black.svg" alt="App Store"
+                                    class="h-10 w-auto">
+                            </a>
+                            <a href="https://play.google.com/store/apps/details?id=com.EVO4.HumanSectionalAnatomy&pcampaignid=web_share"
+                                target="_blank" class="hover:scale-105 transition-transform">
+                                <img src="Images\Buttons\GetItOnGooglePlay_Badge_Web_color_English.png"
+                                    alt="Google Play" class="h-10 w-auto">
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <h4 class="text-xl font-bold text-neutral-900 mb-6 border-b border-neutral-300 pb-4 dark:border-neutral-700 dark:text-neutral-50">
+                            【得獎作品】KAZAN ZILANT </h4>
+                            <div class="w-full max-w-4xl mx-auto mb-8 px-4">
+                                <div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-neutral-200 dark:border-neutral-700">
+                                    <iframe title="Zilant" 
+                                            src="https://sketchfab.com/models/8465ef5784584528ad2b0658c582d1ae/embed?ui_theme=dark"
+                                            class="absolute inset-0 w-full h-full border-0"
+                                            allowfullscreen
+                                            mozallowfullscreen="true" 
+                                            webkitallowfullscreen="true"
+                                            allow="autoplay; fullscreen; xr-spatial-tracking" 
+                                            xr-spatial-tracking
+                                            execution-while-out-of-viewport 
+                                            execution-while-not-rendered 
+                                            web-share>
+                                    </iframe>
+                                </div>
+                            </div>
+                        <div class="flex flex-col md:flex-row gap-4 w-full mb-6">
+
+                            <img src="Images\KAZAN ZILANT\Main06.png" alt="Zilant Render"
+                                 class="flex-1 h-48 md:h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition hover:scale-[1.02] shadow-sm"
+                                 onclick="openLightbox(this.src)">
+                        
+                            <img src="Images\KAZAN ZILANT\Texture.png" alt="Texture Maps"
+                                 class="flex-1 h-48 md:h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition hover:scale-[1.02] shadow-sm"
+                                 onclick="openLightbox(this.src)">
+                        
+                            <img src="Images\KAZAN ZILANT\CertificateOfMerit.JPG" alt="Certificate"
+                                 class="flex-1 h-48 md:h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition hover:scale-[1.02] shadow-sm"
+                                 onclick="openLightbox(this.src)">
+                        
+                        </div>
+                        <div class="bg-neutral-50 p-4 rounded-lg dark:bg-black/50 dark:ring-1 dark:ring-neutral-700">
+                            <h5 class="font-bold text-sm mb-2 text-yellow-800 dark:text-yellow-400">● 榮獲 全國技能競賽「3D
+                                數位遊戲藝術」第二名</h5>
+                            <p class="text-sm text-neutral-600 mb-4 leading-relaxed dark:text-neutral-400">
+                                展現具備國際競賽水平之美術製作實力。</p>
+                            <h5 class="font-bold text-sm mb-2 text-yellow-800 dark:text-yellow-400">● 高品質數位產製</h5>
+                            <p class="text-sm text-neutral-600 mb-4 leading-relaxed dark:text-neutral-400">
+                                執行從高模雕刻、精細拓樸優化至 PBR 材質表現的全流程，產出具備生產等級之數位資產。</p>
                         </div>
                     </div>
 
@@ -279,14 +713,17 @@
         </div>
     </main>
 
-    <footer class="w-full bg-neutral-50 border-t border-neutral-200 text-neutral-400 text-xs no-print dark:border-neutral-800 dark:bg-black dark:text-neutral-500">
+    <footer
+        class="w-full bg-neutral-50 border-t border-neutral-200 text-neutral-400 text-xs no-print dark:border-neutral-800 dark:bg-black dark:text-neutral-500">
         <div class="max-w-5xl mx-auto px-4 md:px-8 py-12 text-center">
             <p>© 2026 Ma Yi-Ping. All Rights Reserved.</p>
             <p>Unity XR Developer & Technical Artist</p>
         </div>
     </footer>
 
-    <button type="button" id="page-top-btn" class="no-print fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-black shadow-lg ring-1 ring-black/10 transition-opacity duration-300 ease-out hover:bg-yellow-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 dark:ring-white/10 dark:focus-visible:ring-offset-neutral-900 opacity-0 pointer-events-none" aria-label="Back to top" title="Page top">
+    <button type="button" id="page-top-btn"
+        class="no-print fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-black shadow-lg ring-1 ring-black/10 transition-opacity duration-300 ease-out hover:bg-yellow-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 dark:ring-white/10 dark:focus-visible:ring-offset-neutral-900 opacity-0 pointer-events-none"
+        aria-label="Back to top" title="Page top">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
         </svg>
@@ -363,7 +800,7 @@
                 Object.assign(container.style, {
                     maxHeight: '300px',  // 限制最大高度
                     width: 'auto',      // 響應式
-                    margin: '3rem auto 2rem auto', 
+                    margin: '3rem auto 2rem auto',
                     display: 'block'       // 確保容器以區塊元素形式存在
                 });
 
@@ -439,7 +876,7 @@
             // --- 4. 監聽模式切換 (解決手動切換不更新的問題) ---
             const observer = new MutationObserver(() => {
                 const newColors = getChartColors();
-                
+
                 // 更新圖表屬性
                 techChart.options.scales.r.angleLines.color = newColors.angle;
                 techChart.options.scales.r.grid.color = newColors.grid;
@@ -460,8 +897,71 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             document.getElementById('btn-' + tabId).classList.add('active');
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // 獲取 LightBox 的 DOM 元素
+        const lightboxOverlay = document.getElementById('lightboxOverlay');
+        const lightboxImage = document.getElementById('lightboxImage');
+
+        // 功能：開啟彈跳視窗
+        function openLightbox(imageSrc) {
+            const overlay = document.getElementById('lightboxOverlay');
+            const img = document.getElementById('lightboxImage');
+
+            img.src = imageSrc;
+            overlay.classList.remove('hidden');
+
+            // 強制瀏覽器重繪，確保動畫能執行
+            void overlay.offsetWidth;
+
+            overlay.classList.remove('pointer-events-none');
+            overlay.style.opacity = "1"; // 直接改 style 權重最高
+            img.classList.remove('scale-95');
+            img.classList.add('scale-100');
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 功能：關閉彈跳視窗
+        function closeLightbox() {
+            const overlay = document.getElementById('lightboxOverlay');
+            const img = document.getElementById('lightboxImage');
+
+            overlay.style.opacity = "0";
+            img.classList.remove('scale-100');
+            img.classList.add('scale-95');
+            overlay.classList.add('pointer-events-none');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+
+            document.body.style.overflow = '';
+        }
+
+        // 額外功能：按下 ESC 鍵也能關閉視窗 (增加 UI 體驗)
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Escape" && !lightboxOverlay.classList.contains('hidden')) {
+                closeLightbox();
+            }
+        });
     </script>
+    <div id="lightboxOverlay"
+        class="fixed inset-0 bg-black/80 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300 pointer-events-none"
+        onclick="closeLightbox()">
+
+        <button class="absolute top-6 right-6 text-white hover:text-yellow-400 z-[10000]" onclick="closeLightbox()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <img id="lightboxImage" src=""
+            class="max-w-full max-h-[90vh] rounded-lg shadow-2xl transform scale-95 transition-transform duration-300"
+            onclick="event.stopPropagation()">
+    </div>
 </body>
+
 </html>
